@@ -1,26 +1,26 @@
-pragma solidity ^0.5.0;
+pragma solidity 0.4.24;
 
 contract Splitter {
     
     address public alice;
-    address payable public bob;
-    address payable public carol;
+    address public bob;
+    address public carol;
     uint256 public deposit;
     
     event LogDepositEther(address sender, uint256 deposit);
     event LogSplitContractBalance(uint256 balance, uint256 amountTransfered, address bob, uint256 bobBalance, address carol, uint256 carolBalance);
 	
-	constructor() public payable {
-		alice = 0xCA35b7d915458EF540aDe6068dFe2F44E8fa733c;
-		bob = 0x583031D1113aD414F02576BD6afaBfb302140225;
-		carol = 0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
-	}
+    constructor() public payable {
+        alice = 0x9553bAA8E83950876A1a0fe52093c031a4724C33;
+        bob = 0xb3B140AA48800c455c013f5504E6532e2D36cfc6;
+        carol = 0xd449e6a9de1027D9ac9Cb1A492468348741461Be;
+    }
 	
-	function getBalance() public view returns (uint256) {
-         return address(this).balance;
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
     }
     
-   function getBalanceAlice() public view returns (uint256) {
+    function getBalanceAlice() public view returns (uint256) {
         return address(alice).balance;
     }
     
@@ -46,9 +46,6 @@ contract Splitter {
         emit LogSplitContractBalance(address(this).balance, halfBalance, bob, bob.balance, carol, carol.balance);
     }
     
-     function() external payable {
+    function() external payable {
     }
-}           
-       
-
-
+}
