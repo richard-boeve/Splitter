@@ -1,12 +1,27 @@
+<!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Splitter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <script src="./web3.js"></script>
     <script src="./faucetCompiled.js"></script>
     <script src="./faucet.js"></script>
 </head>
 <body>
-    <button onclick="topUp()">TEST</button>
-    <button onclick="sendWei()">Send Wei</button>
+    <div class="columns">
+        <div class="column is-three-fifths is-offset-one-fifth has-background-light">
+    <h1 class="title has-text-centered">Splitter</h1>
+    <button class="button is-primary" onclick="topUp()">TEST</button>
+    <button class="button is-primary" onclick="sendWei()">Send Wei</button><br><br>
+    <p> 
+        Balance Alice: <script language="Javascript">balanceAlice()</script><br>
+        Balance Bob: <script language="Javascript">balanceBob()</script><br>
+        Balance Carol: <script language="Javascript">balanceCarol()</script><br>
+    </p>
+    </div>
+    </div>
 </body>
 </html>
