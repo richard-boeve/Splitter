@@ -2,50 +2,45 @@ pragma solidity 0.4.24;
 
 contract Splitter {
     
-    address public alice;
+    address public aliceOwner;
     address public bob;
     address public carol;
-    uint256 public deposit;
-    
-    event LogDepositEther(address sender, uint256 deposit);
-    event LogSplitContractBalance(uint256 balance, uint256 amountTransfered, address bob, uint256 bobBalance, address carol, uint256 carolBalance);
+    uint256 balanceBob;
+    uint256 balanceCarol;
+
+    event LogDeposit(address sender, uint256 deposit, address receiver1, address receiver2, uint256 contractBalance);
+    event LogWithdrawFunds(address sender, uint256 balanceBob, uint256 balanceCarol, uint256 contractBalance);
 	
     constructor() public payable {
-        alice = 0x9553bAA8E83950876A1a0fe52093c031a4724C33;
-        bob = 0xb3B140AA48800c455c013f5504E6532e2D36cfc6;
-        carol = 0xd449e6a9de1027D9ac9Cb1A492468348741461Be;
+        aliceOwner = msg.sender;
     }
 	
     function getBalance() public view returns (uint256) {
         return address(this).balance;
+    }     
+
+    function deposit(address receiver1, address receiver2) public payable returns (uint256, uint256, address, address, uint256) {
+        require(msg.sender == aliceOwner, "Only Alice can deposit Ether");
+        emit LogDeposit(msg.sender, msg.value, receiver1, receiver2, address(this).balance);
+        bob = receiver1;
+        carol = receiver2;
+        balanceBob += msg.value /2;
+        balanceCarol += msg.value /2;
+        return (balanceBob, balanceCarol, bob, carol, address (this).balance);
     }
     
-    function getBalanceAlice() public view returns (uint256) {
-        return address(alice).balance;
-    }
-    
-    function getBalanceBob() public view returns (uint256) {
-        return address(bob).balance;
-    }
-    
-    function getBalanceCarol() public view returns (uint256) {
-        return address(carol).balance;
-    }
-    
-    function depositEther() public payable returns (uint256) {
-        require(msg.sender == alice, "Only Alice can deposit Ether");
-        emit LogDepositEther(msg.sender, msg.value);
-        return deposit = msg.value;
-    }
-    
-    function splitContractBalance() public payable {
-        require(msg.sender == alice, "Only Alice can split the balance");
-        uint256 halfBalance = address(this).balance / 2;
-        address(bob).transfer(halfBalance);
-        address(carol).transfer(halfBalance);
-        emit LogSplitContractBalance(address(this).balance, halfBalance, bob, bob.balance, carol, carol.balance);
+    function withdrawFunds() public returns (uint256) {
+        if (msg.sender == bob) {
+            address(bob).transfer(balanceBob);
+            emit LogWithdrawFunds (msg.sender, balanceBob, balanceCarol, address(this).balance);
+            return balanceBob = 0;
+        } else if (msg.sender == carol) {
+            address(carol).transfer(balanceCarol);
+            emit LogWithdrawFunds (msg.sender, balanceBob, balanceCarol, address(this).balance);
+            return balanceCarol = 0;
+          } else {revert("You are not Bob or Carol");}
     }
     
     function() external payable {
     }
-}
+}           
