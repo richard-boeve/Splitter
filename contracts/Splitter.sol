@@ -7,40 +7,43 @@ contract Splitter {
     address public carol;
     uint256 balanceBob;
     uint256 balanceCarol;
+    
 
-    event LogDeposit(address sender, uint256 deposit, address receiver1, address receiver2, uint256 contractBalance);
-    event LogWithdrawFunds(address sender, uint256 balanceBob, uint256 balanceCarol, uint256 contractBalance);
+    event LogDeposit(address sender, uint256 deposit, address receiver1, address receiver2);
+    event LogWithdrawFunds(address sender);
 	
     constructor() public payable {
         aliceOwner = msg.sender;
     }
 	
-    function getBalance() public view returns (uint256) {
-        return address(this).balance;
-    }     
-
-    function deposit(address receiver1, address receiver2) public payable returns (uint256, uint256, address, address, uint256) {
+    function deposit(address receiver1, address receiver2) public payable returns (bool){
         require(msg.sender == aliceOwner, "Only Alice can deposit Ether");
-        emit LogDeposit(msg.sender, msg.value, receiver1, receiver2, address(this).balance);
+        require(receiver1 != address(0), "Must provide two addresses");
+        require(receiver2 != address(0), "Must provide two addresses");
+        //require(receiver1 != address(0), "Two addresses needed");
+        //require(receiver2 != address(0), "Two addresses needed");
+        emit LogDeposit(msg.sender, msg.value, receiver1, receiver2);
         bob = receiver1;
         carol = receiver2;
         balanceBob += msg.value /2;
         balanceCarol += msg.value /2;
-        return (balanceBob, balanceCarol, bob, carol, address (this).balance);
+        return true;
     }
     
     function withdrawFunds() public returns (uint256) {
+        uint amountBob = balanceBob;
+        uint amountCarol = balanceCarol;
         if (msg.sender == bob) {
-            address(bob).transfer(balanceBob);
-            emit LogWithdrawFunds (msg.sender, balanceBob, balanceCarol, address(this).balance);
-            return balanceBob = 0;
+            balanceBob = 0;    
+            address(bob).transfer(amountBob);
+            emit LogWithdrawFunds (msg.sender);
         } else if (msg.sender == carol) {
-            address(carol).transfer(balanceCarol);
-            emit LogWithdrawFunds (msg.sender, balanceBob, balanceCarol, address(this).balance);
-            return balanceCarol = 0;
-          } else {revert("You are not Bob or Carol");}
+            balanceCarol = 0;
+            address(carol).transfer(amountCarol);
+            emit LogWithdrawFunds (msg.sender);
+          } else { revert(); }
     }
     
-    function() external payable {
+    function() external {
     }
 }           
