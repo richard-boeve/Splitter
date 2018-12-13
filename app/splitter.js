@@ -1,4 +1,6 @@
-var Splitter = artifacts.require("./contracts/Splitter.sol");
+const contract = require("truffle-contract");
+const splitterJson = require("../build/contracts/Splitter.json");
+const Splitter = contract(splitterJson);
 
 if (typeof web3 !== 'undefined') {
     console.log('Web3 browser detected! ' + web3.currentProvider.constructor.name)
@@ -20,35 +22,35 @@ web3.eth.getCoinbase(function (err, coinbase) {
 //const Splitter = "0xb7edd77ab6a502aac1200ebc8005885a6ca7852f";
 const coinbase = "0xe3eb6f6bf2a45bf27a2b86e6ae466b4ac46dbcd5"
 
-// Query blockchain directly
-web3.eth.getBalance(Splitter, function (err, balance) {
-    if (err) {
-        console.error(err);
-    } else {
-        console.log("Contract balance: " + balance);
-    }
-});
+// // Query blockchain directly
+// web3.eth.getBalance(Splitter, function (err, balance) {
+//     if (err) {
+//         console.error(err);
+//     } else {
+//         console.log("Contract balance: " + balance);
+//     }
+// });
 
-function splitterBalance() {
-    web3.eth.getBalance(Splitter, function (err, balance) {
-        if (err) {
-            console.error(err);
-        } else {
-            document.getElementById("splitterBalance").innerHTML = balance;
-        }
-    })
-}
+// function splitterBalance() {
+//     web3.eth.getBalance(Splitter, function (err, balance) {
+//         if (err) {
+//             console.error(err);
+//         } else {
+//             document.getElementById("splitterBalance").innerHTML = balance;
+//         }
+//     })
+// }
 
-function aliceBalance() {
-    web3.eth.getBalance(coinbase, function (err, balance) {
-        if (err) {
-            console.error(err);
-        } else {
-            let balanceEther = web3.fromWei(balance, 'ether');
-            document.getElementById("aliceBalance").innerHTML = balanceEther;
-        }
-    })
-}
+// function aliceBalance() {
+//     web3.eth.getBalance(coinbase, function (err, balance) {
+//         if (err) {
+//             console.error(err);
+//         } else {
+//             let balanceEther = web3.fromWei(balance, 'ether');
+//             document.getElementById("aliceBalance").innerHTML = balanceEther;
+//         }
+//     })
+// }
 
 // Query via Splitter contract
 
