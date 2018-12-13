@@ -1,3 +1,5 @@
+var Splitter = artifacts.require("./contracts/Splitter.sol");
+
 if (typeof web3 !== 'undefined') {
     console.log('Web3 browser detected! ' + web3.currentProvider.constructor.name)
     web3 = new Web3(web3.currentProvider);
@@ -15,7 +17,7 @@ web3.eth.getCoinbase(function (err, coinbase) {
     }
 });
 
-const Splitter = "0xb7edd77ab6a502aac1200ebc8005885a6ca7852f";
+//const Splitter = "0xb7edd77ab6a502aac1200ebc8005885a6ca7852f";
 const coinbase = "0xe3eb6f6bf2a45bf27a2b86e6ae466b4ac46dbcd5"
 
 // Query blockchain directly
@@ -51,15 +53,18 @@ function aliceBalance() {
 // Query via Splitter contract
 
 function getContractBalance() {
-    const contractBalance = 0;
     Splitter.deployed().then(function (instance) {
-        split = instance;
-        return contractBalance = split.getContractBalance();
-    }).then(function (result) {
-        // If this callback is called, the transaction was successfully processed.
-        alert("Transaction successful!");
-        document.getElementById("contractBalance").innerHTML = contractBalance;
-    }).catch(function (e) {
-        // There was an error! Handle it.
-    })
-}
+        console.log(instance.address);
+    })}    
+
+//         const split;
+//         split = instance;
+//         return split.getContractBalance();
+//     }).then(function (result) {
+//         // If this callback is called, the transaction was successfully processed.
+//         alert("Transaction successful!");
+//         document.getElementById("contractBalance").innerHTML = result;
+//     }).catch(function (e) {
+//         // There was an error! Handle it.
+//     })
+// }
