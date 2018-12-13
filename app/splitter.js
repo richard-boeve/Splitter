@@ -1,12 +1,13 @@
-// ~/DAPPS/faucet_barebone/app/faucet.js
 if (typeof web3 !== 'undefined') {
-    // Don't lose an existing provider, like Mist or Metamask
+    console.log('Web3 browser detected! ' + web3.currentProvider.constructor.name)
     web3 = new Web3(web3.currentProvider);
 } else {
     // set the provider you want from Web3.providers
+    console.log('Web3 browser not detected, setting own provider!')
     web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 }
-web3.eth.getCoinbase(function(err, coinbase) {
+
+web3.eth.getCoinbase(function (err, coinbase) {
     if (err) {
         console.error(err);
     } else {
@@ -14,11 +15,11 @@ web3.eth.getCoinbase(function(err, coinbase) {
     }
 });
 
-// Your deployed address changes every time you deploy.
-const splitterAddress = "0xdf87C00e9c96B32B1531DCDA51b7777fb386f48F"; // <-- Put your own
+const Splitter = "0xb7edd77ab6a502aac1200ebc8005885a6ca7852f";
+const coinbase = "0xe3eb6f6bf2a45bf27a2b86e6ae466b4ac46dbcd5"
 
-// Query eth for balance
-web3.eth.getBalance(splitterAddress, function(err, balance) {
+// Query blockchain directly
+web3.eth.getBalance(Splitter, function (err, balance) {
     if (err) {
         console.error(err);
     } else {
@@ -27,58 +28,38 @@ web3.eth.getBalance(splitterAddress, function(err, balance) {
 });
 
 function splitterBalance() {
-    web3.eth.getBalance(splitterAddress, function(err, balance) {
+    web3.eth.getBalance(Splitter, function (err, balance) {
         if (err) {
             console.error(err);
-            } else {
-                return balance;
-            }
-})}
+        } else {
+            document.getElementById("splitterBalance").innerHTML = balance;
+        }
+    })
+}
 
+function aliceBalance() {
+    web3.eth.getBalance(coinbase, function (err, balance) {
+        if (err) {
+            console.error(err);
+        } else {
+            let balanceEther = web3.fromWei(balance, 'ether');
+            document.getElementById("aliceBalance").innerHTML = balanceEther;
+        }
+    })
+}
 
+// Query via Splitter contract
 
-// function topUp() {
-//     web3.eth.getCoinbase(function(err, coinbase) {
-//         if (err) {
-//             console.error(err);
-//         } else {
-//             web3.eth.sendTransaction({ 
-//                 from: coinbase, 
-//                 to: faucetAddress,
-//                 value: web3.toWei(1, "ether") 
-//             }, function(err, txn) {
-//                 if (err) {
-//                     console.error(err);
-//                 } else {
-//                     console.log("topUp txn: " + txn);
-//                 }
-//             });
-//         }
-//     });
-// }
-
-// function sendWei() {
-//     web3.eth.getCoinbase(function(err, coinbase) {
-//         if (err) {
-//             console.error(err);
-//         } else {
-//             web3.eth.getAccounts(function(err, accounts) {
-//                 if (err) {
-//                     console.error(err);
-//                 } else {
-//                     const targetAccount = accounts[1];      
-//                     faucetInstance.sendWei(
-//                         targetAccount,
-//                         { from: coinbase },
-//                         function(err, txn) {
-//                             if (err) {
-//                                 console.error(err);
-//                             } else {
-//                                 console.log("sendWei txn: " + txn);
-//                             }
-//                         });
-//                 }
-//             });
-//         }
-//     });
-// }   
+function getContractBalance() {
+    const contractBalance = 0;
+    Splitter.deployed().then(function (instance) {
+        split = instance;
+        return contractBalance = split.getContractBalance();
+    }).then(function (result) {
+        // If this callback is called, the transaction was successfully processed.
+        alert("Transaction successful!");
+        document.getElementById("contractBalance").innerHTML = contractBalance;
+    }).catch(function (e) {
+        // There was an error! Handle it.
+    })
+}

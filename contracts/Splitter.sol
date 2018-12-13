@@ -16,12 +16,15 @@ contract Splitter {
         aliceOwner = msg.sender;
     }
 	
+    function getContractBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+
     function deposit(address receiver1, address receiver2) public payable returns (bool){
         require(msg.sender == aliceOwner, "Only Alice can deposit Ether");
         require(receiver1 != address(0), "Must provide two addresses");
         require(receiver2 != address(0), "Must provide two addresses");
-        //require(receiver1 != address(0), "Two addresses needed");
-        //require(receiver2 != address(0), "Two addresses needed");
         emit LogDeposit(msg.sender, msg.value, receiver1, receiver2);
         bob = receiver1;
         carol = receiver2;
