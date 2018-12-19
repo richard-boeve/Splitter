@@ -21,6 +21,14 @@
   },
   "homepage": "https://github.com/richard-boeve/Splitter#readme",
   "dependencies": {
-    "truffle-contract": "^3.0.6"
+    "bluebird": "^3.5.3",
+    "jquery": "^3.3.1",
+    "truffle-contract": "^3.0.6",
+    "web3": "^0.20.7"
+  },
+  "devDependencies": {
+    "file-loader": "^2.0.0",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2"
   }
 }

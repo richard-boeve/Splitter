@@ -1,6 +1,9 @@
+const Web3 = require("web3");
+const Promise = require("bluebird");
+const $ = require("jquery");
 const contract = require("truffle-contract");
 const splitterJson = require("../build/contracts/Splitter.json");
-const Splitter = contract(splitterJson);
+
 
 if (typeof web3 !== 'undefined') {
     console.log('Web3 browser detected! ' + web3.currentProvider.constructor.name)
@@ -11,62 +14,69 @@ if (typeof web3 !== 'undefined') {
     web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 }
 
-web3.eth.getCoinbase(function (err, coinbase) {
-    if (err) {
-        console.error(err);
-    } else {
-        console.log("Coinbase: " + coinbase);
-    }
+Promise.promisifyAll(web3.eth, { suffix: "Promise" });
+Promise.promisifyAll(web3.version, { suffix: "Promise" });
+
+const Splitter = contract(splitterJson);
+Splitter.setProvider(web3.currentProvider);
+
+window.addEventListener('load', function () {
+    return web3.eth.getAccountsPromise()
+        .then(accounts => {
+            console.log(accounts);
+            if (accounts.length == 0) {
+                $("#balanceAlice").html("N/A");
+                throw new Error("No account with which to transact");
+            }
+            window.account = accounts[0];
+            console.log("Account:", window.account);
+            return web3.eth.getBalancePromise(window.account);
+        })
+        .then(balance => $("#balanceAlice").html(web3.fromWei(balance.toString(10))))
+        .catch(console.error);
 });
 
-//const Splitter = "0xb7edd77ab6a502aac1200ebc8005885a6ca7852f";
-const coinbase = "0xe3eb6f6bf2a45bf27a2b86e6ae466b4ac46dbcd5"
+window.addEventListener('load', function () {
+    return web3.eth.getAccountsPromise()
+        .then(accounts => {
+            console.log(accounts);
+            if (accounts.length == 0) {
+                $("#balanceBob").html("N/A");
+                throw new Error("No account with which to transact");
+            }
+            window.account = accounts[1];
+            console.log("Account:", window.account);
+            return web3.eth.getBalancePromise(window.account);
+        })
+        .then(balance => $("#balanceBob").html(web3.fromWei(balance.toString(10))
+        ))
+        .catch(console.error);
+});
 
-// // Query blockchain directly
-// web3.eth.getBalance(Splitter, function (err, balance) {
-//     if (err) {
-//         console.error(err);
-//     } else {
-//         console.log("Contract balance: " + balance);
-//     }
-// });
+window.addEventListener('load', function () {
+    return web3.eth.getAccountsPromise()
+        .then(accounts => {
+            console.log(accounts);
+            if (accounts.length == 0) {
+                $("#balanceCarol").html("N/A");
+                throw new Error("No account with which to transact");
+            }
+            window.account = accounts[2];
+            console.log("Account:", window.account);
+            return web3.eth.getBalancePromise(window.account);
+        })
+        .then(balance => $("#balanceCarol").html(web3.fromWei(balance.toString(10))
+        ))
+        .catch(console.error);
+});
 
-// function splitterBalance() {
-//     web3.eth.getBalance(Splitter, function (err, balance) {
-//         if (err) {
-//             console.error(err);
-//         } else {
-//             document.getElementById("splitterBalance").innerHTML = balance;
-//         }
-//     })
-// }
+window.addEventListener('load', function () {
+    return Splitter.deployed()
+    .then(function (split) {
+        return split.getContractBalance.call();
+      }).then(balance => $("#balanceContract").html(web3.fromWei(balance.toString(10))
+      ))
+      .catch(console.error);
+});
 
-// function aliceBalance() {
-//     web3.eth.getBalance(coinbase, function (err, balance) {
-//         if (err) {
-//             console.error(err);
-//         } else {
-//             let balanceEther = web3.fromWei(balance, 'ether');
-//             document.getElementById("aliceBalance").innerHTML = balanceEther;
-//         }
-//     })
-// }
-
-// Query via Splitter contract
-
-function getContractBalance() {
-    Splitter.deployed().then(function (instance) {
-        console.log(instance.address);
-    })}    
-
-//         const split;
-//         split = instance;
-//         return split.getContractBalance();
-//     }).then(function (result) {
-//         // If this callback is called, the transaction was successfully processed.
-//         alert("Transaction successful!");
-//         document.getElementById("contractBalance").innerHTML = result;
-//     }).catch(function (e) {
-//         // There was an error! Handle it.
-//     })
-// }
+require("file-loader?name=./index.html!./index.html");
