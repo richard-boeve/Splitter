@@ -7,23 +7,32 @@
     <title>Splitter</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-    <!-- <script src="./web3.js"></script> -->
-    <script src="./splitter.js"></script>
 </head>
 
 <body>
-        <script src="./splitter.js"></script>
-        <div>Alice has <span id="balanceAlice">Loading...</span> Ether</div>
-        <div>Bob has <span id="balanceBob">Loading...</span> Ether</div>
-        <div>Carol has <span id="balanceCarol">Loading...</span> Ether</div>
-        <div>The Splitter contract has <span id="balanceContract">Loading...</span> Ether</div>
-        <div>
-            Send <input name="amount" type="number" placeholder="0" /> 
-            MetaCoins to <input name="recipient" type="text" placeholder="0x0011223344556677889900112233445566778899" />
-            <button id="send">Now</button>.
-        </div>
-        <div id="status"></div>
-    </body>
+    <script src="./splitter.js"></script>
+    <div class="title is-3 has-text-danger">Splitter</div>
+    <div class="content">Alice has the following balance in Ether: <span id="balanceAlice">Loading...</span></div>
+    <div class="content">Bob has the following balance in Ether: <span id="balanceBob">Loading...</span></div>
+    <div class="content">Carol has the following balance in Ether: <span id="balanceCarol">Loading...</span></div>
+    <div class="content">The Splitter contract has the following balance in Ether: <span id="balanceContract">Loading...</span></div>
+    <hr>
+    <div class="content">
+        If you are Alice, then send
+        <input style="width:10em;" class="input is-small" name="amount" type="number" placeholder="0" />
+        Ether to
+        <input style="width:30em;" class="input is-small" name="recipient1" type="text" placeholder="Address" />&nbsp;
+        and &nbsp;
+        <input style="width:30em;" class="input is-small" name="recipient2" type="text" placeholder="Address" />
+        <button class="button is-danger is-small" id="send">Send</button>
+    </div>
+    <div class="content">
+        If you are Bob or Carol, press this button to withdraw your balance from the contract:
+        <button class="button is-danger is-small" id="withdraw">Withdraw</button>
+    </div>
+    <div class="content" id="status">
+    </div>
+</body>
 
 
 
