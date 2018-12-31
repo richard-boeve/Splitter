@@ -1,5 +1,7 @@
 var Splitter = artifacts.require("./Splitter.sol");
 
+//TEST USING PROMISES
+
 contract('Splitter', function () {
   it("should return address of splitter contract deployed", function () {
     return Splitter.deployed().then(function (instance) {
@@ -9,6 +11,9 @@ contract('Splitter', function () {
     });
   });
 })
+
+
+
 
 contract('Splitter', function () {
   it("should return balance of contract deployed", function () {
@@ -20,6 +25,8 @@ contract('Splitter', function () {
     });
   });
 })
+
+
 
 contract('Splitter', function (accounts) {
     owner = accounts[0];
@@ -55,3 +62,37 @@ contract('Splitter', function (accounts) {
 //   });
 // });
 // })
+
+//TESTS USING ASYNC
+
+contract('Splitter', function () {
+  it("should return address of splitter contract deployed - Async", async function () {
+    let split = await Splitter.deployed();
+    let address = await split.address;
+    console.log(address);
+  })
+})  
+
+contract('Splitter', function () {
+  it("should return balance of contract deployed - Async", async function () {
+    let split = await Splitter.deployed();
+    let balance = await split.getContractBalance.call(split);
+    console.log(balance.toString(10));
+    assert.equal(balance.toString(10), "0", "0 is not the balance of the contract");
+    });
+})
+
+contract('Splitter', function (accounts) {
+  owner = accounts[0];
+  receiver1 = accounts[1];
+  receiver2 = accounts[2];
+  it("owner can deposit to contract - Async", async function () {
+    var amount = 3;
+    let split = await Splitter.deployed();
+    split.deposit(receiver1, receiver2, { from: owner, value: amount });
+    let balance = await split.getContractBalance.call(split);
+    assert.equal(balance.toString(10), "3", "The contract balance is incorrect");
+  });
+})
+
+
