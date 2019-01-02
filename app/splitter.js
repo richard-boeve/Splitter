@@ -32,9 +32,10 @@ window.addEventListener('load', function () {
             console.log("Account:", window.account);
             return web3.eth.getBalancePromise(window.account);
         })
-        .then(balance => $("#balanceAlice").html(web3.fromWei(balance.toString(10))))
+        .then(balance => $("#balanceAlice").html(web3.fromWei(balance.valueOf())))
         .then(() => $("#send").click(deposit))
-        .then(() => $("#withdraw").click(withdrawFunds))
+        .then(() => $("#withdrawBob").click(withdrawFundsBob))
+        .then(() => $("#withdrawCarol").click(withdrawFundsCarol))
         .catch(console.error);
 });
 
@@ -112,13 +113,24 @@ const deposit = function () {
                         console.error(receipt);
                         $("#status").html("There was an error in the tx execution");
                     } else {
-                        console.log(split.LogDeposit().formatter(receipt.logs[0]).args);
+                        var help = split.LogDeposit().formatter(receipt.logs[0]);
+                        console.log("Sender's address: " + help.args.sender);
+                        console.log("Deposit amount: " + web3.fromWei(help.args.deposit));
+                        console.log("Receiver 1: " + help.args.receiver1);
+                        console.log("Receiver 2: " + help.args.receiver2);
+                        //console.log(help.args.deposit);
                         $("#status").html("Transfer executed");
                     }
                     return web3.eth.getBalancePromise(window.account);
                 })
-                .then(balance => $("#balanceAlice").html(web3.fromWei(balance.toString(10))))
-                .then(balance => $("#balanceContract").html(web3.fromWei(balance.toString(10))))
+                .then(balance => {
+                    $("#balanceAlice").html(web3.fromWei(balance.valueOf()));
+                    //set the new contract balance
+                    return split.getContractBalance();
+                })
+                .then(balance => {
+                    $("#balanceContract").html(web3.fromWei(balance.valueOf()));
+                })
                 .catch(e => {
                     $("#status").html(e.toString());
                     console.error(e);
@@ -126,73 +138,49 @@ const deposit = function () {
         })
 };
 
-const withdrawFunds = function () {
-    let split;
+const withdrawFundsBob = function () {
     return web3.eth.getAccountsPromise()
         .then(accounts => {
-            if (window.account == accounts[1]) {
-                console.log("Account to withdraw from:", window.account);
-                return Splitter.deployed()
-                    .then(_split => {
-                        split = _split;
-                        return split.withdrawFunds.sendTransaction({ from: window.account });
-                    })
-                    .then(txHash => {
-                        $("#status").html("Transaction on the way " + txHash);
-                        const tryAgain = () => web3.eth.getTransactionReceiptPromise(txHash)
-                            .then(receipt => receipt !== null ?
-                                receipt :
-                                Promise.delay(1000).then(tryAgain));
-                        return tryAgain();
-                    })
-                    .then(receipt => {
-                        if (parseInt(receipt.status) != 1) {
-                            console.error("Wrong status");
-                            console.error(receipt);
-                            $("#status").html("There was an error in the tx execution, status not 1");
-                        } else if (receipt.logs.length == 0) {
-                            console.error("Empty logs");
-                            console.error(receipt);
-                            $("#status").html("There was an error in the tx execution");
-                        } else {
-                            console.log(split.LogWithdrawFunds().formatter(receipt.logs[0]).args);
-                            $("#status").html("Transfer executed");
-                        }
-                    });
-            }
-            else if (window.account == accounts[2]) {
-                console.log("Account to withdraw from:", window.account);
-                return Splitter.deployed()
-                    .then(_split => {
-                        split = _split;
-                        return split.withdrawFunds.sendTransaction({ from: window.account});
-                    })
-                    .then(txHash => {
-                        $("#status").html("Transaction on the way " + txHash);
-                        const tryAgain = () => web3.eth.getTransactionReceiptPromise(txHash)
-                            .then(receipt => receipt !== null ?
-                                receipt :
-                                Promise.delay(1000).then(tryAgain));
-                        return tryAgain();
-                    })
-                    .then(receipt => {
-                        if (parseInt(receipt.status) != 1) {
-                            console.error("Wrong status");
-                            console.error(receipt);
-                            $("#status").html("There was an error in the tx execution, status not 1");
-                        } else if (receipt.logs.length == 0) {
-                            console.error("Empty logs");
-                            console.error(receipt);
-                            $("#status").html("There was an error in the tx execution");
-                        } else {
-                            console.log(split.LogWithdrawFunds().formatter(receipt.logs[0]).args);
-                            $("#status").html("Transfer executed");
-                        }
-                    });
-            }
-            else {
-                throw new Error("No account with which to transact")
-            };
+            withdrawFunds(accounts[1]);
+        })    
+}
+
+const withdrawFundsCarol = function () {
+    return web3.eth.getAccountsPromise()
+        .then(accounts => {
+            withdrawFunds(accounts[2]);
+        })    
+}
+
+const withdrawFunds = function (accountToWithdraw) {
+    let split;
+    console.log(accountToWithdraw);
+    return Splitter.deployed()
+        .then(_split => {
+            split = _split;
+            return split.withdrawFunds.sendTransaction({ from: accountToWithdraw });
         })
+        .then(txHash => {
+            $("#status").html("Transaction on the way " + txHash);
+            const tryAgain = () => web3.eth.getTransactionReceiptPromise(txHash)
+                .then(receipt => receipt !== null ?
+                    receipt :
+                    Promise.delay(1000).then(tryAgain));
+            return tryAgain();
+        })
+        .then(receipt => {
+            if (parseInt(receipt.status) != 1) {
+                console.error("Wrong status");
+                console.error(receipt);
+                $("#status").html("There was an error in the tx execution, status not 1");
+            } else if (receipt.logs.length == 0) {
+                console.error("Empty logs");
+                console.error(receipt);
+                $("#status").html("There was an error in the tx execution");
+            } else {
+                console.log(split.LogWithdrawFunds().formatter(receipt.logs[0]).args);
+                $("#status").html("Transfer executed");
+            }
+        });
 };
 
