@@ -96,3 +96,4 @@ contract('Splitter', function (accounts) {
 })
 
 
+

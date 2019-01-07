@@ -49,4 +49,4 @@ contract Splitter {
     
     function() external {
     }
-}           
+}    
