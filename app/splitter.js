@@ -93,7 +93,9 @@ const deposit = function () {
             return Splitter.deployed()
                 .then(_split => {
                     split = _split;
-                    return split.deposit.sendTransaction($("input[name='recipient1']").val(), $("input[name='recipient2']").val(), { from: window.account, value: web3.toWei($("input[name='amount']").val(), "ether") });
+                    console.log("Splitter address: ", split.address);
+                    console.log(split)
+                    return split.deposit.sendTransaction($("input[name='recipient1']").val(), $("input[name='recipient2']").val(), { from: window.account, value: web3.toWei($("input[name='amount']").val(), "ether"), gas:'210000' });
                 })
                 .then(txHash => {
                     $("#status").html("Transaction on the way " + txHash);
