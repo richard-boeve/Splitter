@@ -12,35 +12,31 @@
 <body>
     <script src="./splitter.js"></script>
     <div class="title is-3 has-text-danger">Splitter</div>
-    <div class="content">Alice has the following balance in Ether: <span id="balanceAlice">Loading...</span></div>
-    <div class="content">Bob has the following balance in Ether: <span id="balanceBob">Loading...</span></div>
-    <div class="content">Carol has the following balance in Ether: <span id="balanceCarol">Loading...</span></div>
     <div class="content">The Splitter contract has the following balance in Ether: <span id="balanceContract">Loading...</span></div>
-    <hr>
+    <div>
+        <hr>
+    </div>
     <div class="content">
-        If you are Alice, then send
+        Send
         <input style="width:10em;" class="input is-small" name="amount" type="number" placeholder="0" />
-        Ether to
-        <input style="width:30em;" class="input is-small" name="recipient1" type="text" placeholder="Address" />&nbsp;
+        Ether from this address <input style="width:30em;" class="input is-small" name="sender" type="text" placeholder="Deposit Address" /><span id="accountsFound"></span>&nbsp; 
+    </div>
+    <div>    
+        to
+        <input style="width:30em;" class="input is-small" name="recipient1" type="text" placeholder="Receiver Address" />&nbsp;
         and &nbsp;
-        <input style="width:30em;" class="input is-small" name="recipient2" type="text" placeholder="Address" />
+        <input style="width:30em;" class="input is-small" name="recipient2" type="text" placeholder="Receiver Address" />
         <button class="button is-danger is-small" id="send">Send</button>
     </div>
-    <div class="content">
-        If you are Bob, press this button to withdraw your balance from the contract:
-        <button class="button is-danger is-small" id="withdrawBob">Withdraw Bob</button>
+    <div>
+        <hr>
     </div>
     <div class="content">
-        If you are Carol, press this button to withdraw your balance from the contract:
-        <button class="button is-danger is-small" id="withdrawCarol">Withdraw Carol</button>
+        To withdraw your balance, please enter your address <input style="width:30em;" class="input is-small" name="withdrawalAddress" type="text" placeholder="Withdrawal Address" /> and press the following button:
+        <button class="button is-danger is-small" id="withdraw">Withdraw</button>
     </div>
-
     <div class="content" id="status">
     </div>
-</body>
-
-
-
 </body>
 
 </html>
