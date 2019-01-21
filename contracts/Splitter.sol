@@ -78,10 +78,10 @@ contract Splitter {
         // Set the balance of the msg.sender to 0
         uint256 amountForWithdrawal = balanceReceiver[msg.sender];
         balanceReceiver[msg.sender] = 0;
-        // Transfer the balance to the msg.sender
-        address(msg.sender).transfer(amountForWithdrawal);
         // Create logs
         emit LogWithdrawFunds (msg.sender, amountForWithdrawal);
+        // Transfer the balance to the msg.sender
+        address(msg.sender).transfer(amountForWithdrawal);
     }    
     
     //Fallback function which rejects funds sent to the contract address if sender is not the owner
