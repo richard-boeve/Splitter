@@ -5,8 +5,7 @@ contract Splitter {
     //Global Variables
     address public owner;
     SplitterState public state;
-    uint256 half;
-
+    
     //Constructor, setting initial properties
     constructor() public {
         owner = msg.sender;
@@ -29,7 +28,7 @@ contract Splitter {
     //All events that can be logged
     event LogDeposit(address indexed sender, uint256 depositAmount, address indexed receiver1, address indexed receiver2);
     event LogWithdrawFunds(address indexed sender, uint amount);
-    event LogSetState(SplitterState newState);
+    event LogSetState(address indexed sender, SplitterState indexed newState);
     
     //Mapping of address to balance
     mapping(address => uint256) public balanceReceiver;
@@ -41,7 +40,7 @@ contract Splitter {
         //Set the state of the Contract
         state = newState;
         //Create logs
-        emit LogSetState(newState);
+        emit LogSetState(msg.sender, newState);
     }
 
     //Function that allows UI to query the balance of the contract
@@ -51,6 +50,7 @@ contract Splitter {
     
     //Allows the message sender to send Ether to the contract and have it assigned to the balance of two receiver addresses
     function deposit(address _receiver1, address _receiver2) public payable {
+        uint256 half;
         // Verify that the contract is operational before continueing
         require(state == SplitterState.Operational, "Contract is not operational");
         // Verify non empty addresses have been provided
@@ -85,6 +85,7 @@ contract Splitter {
     }    
     
     //Fallback function which rejects funds sent to the contract address if sender is not the owner
-    function() public { revert(); 
+    function() public { 
+        revert("Fallback function triggered"); 
     }  
 }
