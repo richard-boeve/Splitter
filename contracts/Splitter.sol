@@ -1,47 +1,19 @@
 pragma solidity 0.4.24;
 
-contract Splitter {
-    
-    //Global Variables
-    address public owner;
-    SplitterState public state;
-    
-    //Constructor, setting initial properties
-    constructor() public {
-        owner = msg.sender;
-        state = SplitterState.Operational;
-    }
+import "./Stoppable.sol";
+import "./SafeMath.sol";
 
-    //Modifiers
-    modifier onlyOwner {
-        require(msg.sender == owner, "Only owner can perform this action");
-        _;
-    }
+contract Splitter is Stoppable {
 
-    //Defining the possible states of the contract
-    enum SplitterState {
-        Operational,
-        Paused,
-        Deactivated
-    }
-    
+    //Using the SafeMath library
+    using SafeMath for uint;
+
     //All events that can be logged
     event LogDeposit(address indexed sender, uint256 depositAmount, address indexed receiver1, address indexed receiver2);
     event LogWithdrawFunds(address indexed sender, uint amount);
-    event LogSetState(address indexed sender, SplitterState indexed newState);
-    
+
     //Mapping of address to balance
     mapping(address => uint256) public balanceReceiver;
-
-    //Function that allows owner to change the state of the contract
-    function setState(SplitterState newState) public onlyOwner {
-        //Verify if the state is Deactivated, if so, don't allow update to the state;
-        require(state != SplitterState.Deactivated, "The contract is deactivated and can't be made operational or paused");
-        //Set the state of the Contract
-        state = newState;
-        //Create logs
-        emit LogSetState(msg.sender, newState);
-    }
 
     //Function that allows UI to query the balance of the contract
     function getContractBalance() public view returns (uint256) {
@@ -78,10 +50,10 @@ contract Splitter {
         // Set the balance of the msg.sender to 0
         uint256 amountForWithdrawal = balanceReceiver[msg.sender];
         balanceReceiver[msg.sender] = 0;
-        // Create logs
-        emit LogWithdrawFunds (msg.sender, amountForWithdrawal);
         // Transfer the balance to the msg.sender
         address(msg.sender).transfer(amountForWithdrawal);
+        // Create logs
+        emit LogWithdrawFunds (msg.sender, amountForWithdrawal);
     }    
     
     //Fallback function which rejects funds sent to the contract address if sender is not the owner

@@ -129,7 +129,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 109,
+                        "referencedDeclaration": 379,
                         "src": "204:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -218,7 +218,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 109,
+                            "referencedDeclaration": 379,
                             "src": "284:3:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -294,10 +294,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        112,
-                        113
+                        382,
+                        383
                       ],
-                      "referencedDeclaration": 113,
+                      "referencedDeclaration": 383,
                       "src": "276:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -382,10 +382,10 @@
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        114,
-                        115
+                        384,
+                        385
                       ],
-                      "referencedDeclaration": 115,
+                      "referencedDeclaration": 385,
                       "src": "495:6:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
@@ -542,7 +542,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 109,
+                        "referencedDeclaration": 379,
                         "src": "204:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -631,7 +631,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 109,
+                            "referencedDeclaration": 379,
                             "src": "284:3:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -707,10 +707,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        112,
-                        113
+                        382,
+                        383
                       ],
-                      "referencedDeclaration": 113,
+                      "referencedDeclaration": 383,
                       "src": "276:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -795,10 +795,10 @@
                       "name": "revert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        114,
-                        115
+                        384,
+                        385
                       ],
-                      "referencedDeclaration": 115,
+                      "referencedDeclaration": 385,
                       "src": "495:6:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
@@ -872,5 +872,5 @@
     }
   },
   "schemaVersion": "2.0.1",
-  "updatedAt": "2019-01-21T03:56:37.425Z"
+  "updatedAt": "2019-01-22T05:22:13.531Z"
 }
