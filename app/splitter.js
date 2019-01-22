@@ -7,16 +7,15 @@ const splitterJson = require("../build/contracts/Splitter.json");
 require("file-loader?name=./index.html!./index.html");
 
 // Use a web3 browser if availble
-window.addEventListener('load', function () {
     if (typeof web3 !== 'undefined') {
         console.log('Web3 browser detected! ' + web3.currentProvider.constructor.name)
-        web3 = new Web3(web3.currentProvider);
+        window.web3 = new Web3(web3.currentProvider);
     // Otherwise, use a own provider with port 8545  
     } else {
         console.log('Web3 browser not detected, setting own provider!')
-        web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
     }
-})    
+    
 
 Promise.promisifyAll(web3.eth, { suffix: "Promise" });
 Promise.promisifyAll(web3.version, { suffix: "Promise" });
