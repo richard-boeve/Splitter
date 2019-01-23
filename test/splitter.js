@@ -74,58 +74,69 @@ contract('Splitter', function (accounts) {
 
 
 contract('Splitter', (accounts) => {
-    const owner = accounts[0];
-    const receiver1 = accounts[1];
-    const receiver2 = accounts[2];
- 
-    
-    it("verify everyting is set up correctly and set split - Async", async () => {
-        // Retrieve the splitter contract instance
-        const split = await Splitter.deployed();
-        // Should verify the contract balance is Zero
-        assert.equal(0, await split.getContractBalance().valueOf(), "The contract balance needs to be 0");
-      })
 
-    it("owner can deposit to contract - Async", async () => {
-        // Amount of ether in wei to deposit
-        const amountToDeposit = 2000000;
-        const split = await Splitter.deployed();
-        // Retrieve the current balance of the contract
-        const oldBalance = await split.getContractBalance.call();
-        // Execute the deposit and save the transaction receipt
-        const receipt = await split.deposit(receiver1, receiver2, { from: owner, value: amountToDeposit, gas: 210000 });
-        // Test the results returned in the transaction receipt (e.g. Event log files)
-        assert.equal(receipt.logs[0].args.sender, owner, "Owner is incorrect");          
-        assert.equal(receipt.logs[0].args.depositAmount.valueOf(), amountToDeposit, "Deposit amount event log file entry is incorrect");
-        assert.equal(receipt.logs[0].args.receiver1, receiver1, "Receiver 1 event log file entry is incorrect");
-        assert.equal(receipt.logs[0].args.receiver2, receiver2, "Receiver 2 event log file entry is incorrect");
-        //Get the new balance of the splitter contract
-        const newBalance = await split.getContractBalance();
-        // Verify the new balance is correct (sum of old balance plus whatever has been added)
-        assert.equal(newBalance.valueOf(), +amountToDeposit + +oldBalance.valueOf(), "The new contract balance is incorrect");
+  let split;
+  const owner = accounts[0];
+  const receiver1 = accounts[1];
+  const receiver2 = accounts[2];
+
+  beforeEach(function () {
+    return Splitter.new()
+      .then(function (instance) {
+        split = instance;
       });
+  });
 
-    it("receiver1 can withdraw from contract - Async", async () => {
-      //amount of ether to withdraw
-      const split = await Splitter.deployed();
-      const oldContractBalance = await split.getContractBalance.call();
-      console.log("Old contract balance:", oldContractBalance.valueOf());
-      const receiver1_starting_balance = web3.eth.getBalance(receiver1);
-      console.log("Receiver 1 starting balance:", receiver1_starting_balance.valueOf());
-      const txObjWithdraw = await split.withdrawFunds({from: receiver1});
-      const receiver1_end_balance = web3.eth.getBalance(receiver1);
-      console.log("Receiver 1 end balance:", receiver1_end_balance.valueOf());
-      const newContractBalance = await split.getContractBalance.call();
-      console.log("New Contract Balance:", newContractBalance.valueOf());
-      const amountWithdrawn = oldContractBalance - newContractBalance;
-      console.log("Amount withdrawn:", amountWithdrawn.valueOf());
-      const gasused = txObjWithdraw.receipt.gasUsed;
-      console.log("Gas used:", gasused);
-      const newReceiver1Balance = receiver1_starting_balance + amountWithdrawn - gasused;
-      console.log("New balance Receiver1:", newReceiver1Balance.valueOf());
-      // Verify that receiver1 has the correct balance after withdrawing
-      assert.equal(receiver1_end_balance, receiver1_starting_balance + amountWithdrawn - gasused, "The balance of receiver1 after withdrawal is incorrect");
-      // Verify that the contract has the correct balance after withdrawing
-      assert.equal(newContractBalance, oldContractBalance - amountWithdrawn, "New contract balance is incorrect" );
-       })
+  it("verify everyting is set up correctly and set split - Async", async () => {
+    // Retrieve the splitter contract instance
+    //const split = await Splitter.deployed();
+    // Should verify the contract balance is Zero
+    assert.equal(0, await split.getContractBalance().valueOf(), "The contract balance needs to be 0");
   })
+
+  it("owner can deposit to contract - Async", async () => {
+    // Amount of ether in wei to deposit
+    const amountToDeposit = 2000000;
+    //const split = await Splitter.deployed();
+    // Retrieve the current balance of the contract
+    const oldBalance = await split.getContractBalance.call();
+    // Execute the deposit and save the transaction receipt
+    const receipt = await split.deposit(receiver1, receiver2, { from: owner, value: amountToDeposit, gas: 210000 });
+    // Test the results returned in the transaction receipt (e.g. Event log files)
+    assert.equal(receipt.logs[0].args.sender, owner, "Owner is incorrect");
+    assert.equal(receipt.logs[0].args.depositAmount.valueOf(), amountToDeposit, "Deposit amount event log file entry is incorrect");
+    assert.equal(receipt.logs[0].args.receiver1, receiver1, "Receiver 1 event log file entry is incorrect");
+    assert.equal(receipt.logs[0].args.receiver2, receiver2, "Receiver 2 event log file entry is incorrect");
+    //Get the new balance of the splitter contract
+    const newBalance = await split.getContractBalance();
+    // Verify the new balance is correct (sum of old balance plus whatever has been added)
+    assert.equal(newBalance.valueOf(), +amountToDeposit + +oldBalance.valueOf(), "The new contract balance is incorrect");
+  });
+
+  it("receiver1 can withdraw from contract - Async", async () => {
+    //amount of ether to withdraw
+    // Execute the deposit and save the transaction receipt
+    const amountToDeposit = 2000000;
+    const receipt = await split.deposit(receiver1, receiver2, { from: owner, value: amountToDeposit });
+    const oldContractBalance = await split.getContractBalance.call();
+    console.log("Old contract balance:", oldContractBalance);
+    const receiver1_starting_balance = await web3.eth.getBalance(receiver1);
+    console.log("Receiver 1 starting balance:", receiver1_starting_balance);
+    const txObjWithdraw = await split.withdrawFunds({ from: receiver1 });
+    const receiver1_end_balance = await web3.eth.getBalance(receiver1);
+    console.log("Receiver 1 end balance:", receiver1_end_balance);
+    const newContractBalance = await split.getContractBalance.call();
+    console.log("New Contract Balance:", newContractBalance);
+    const amountWithdrawn = oldContractBalance - newContractBalance;
+    console.log("Amount withdrawn:", amountWithdrawn);
+    const gasused = txObjWithdraw.receipt.gasUsed;
+    const gasPaid = gasused * 10000000000;
+    console.log("Gas Paid:", gasPaid);
+    const endBalanceExpected = receiver1_starting_balance + amountWithdrawn - gasPaid;
+    console.log ("endBalanceExpect:", endBalanceExpected);
+    // Verify that receiver1 has the correct balance after withdrawing
+    assert.equal(receiver1_end_balance, endBalanceExpected, "The balance of receiver1 after withdrawal is incorrect");
+    // Verify that the contract has the correct balance after withdrawing
+    assert.equal(newContractBalance, oldContractBalance - amountWithdrawn, "New contract balance is incorrect");
+  })
+}) 
