@@ -18,7 +18,7 @@ contract('Splitter', function () {
       return instance.getContractBalance.call(instance);
     }).then(function (balanceC) {
       console.log(balanceC.toString(10));
-      assert.equal(balanceC.toString(10), "0", "0 is not the balance of the contract");
+      assert.strictEqual(balanceC.toString(10), "0", "0 is not the balance of the contract");
     });
   });
 })
@@ -35,7 +35,7 @@ contract('Splitter', function (accounts) {
     }).then(function () {
       return splitter.getContractBalance.call(splitter);
     }).then(function (balanceC) {
-      assert.equal(balanceC.toString(10), "3", "The contract balance is incorrect");
+      assert.strictEqual(balanceC.toString(10), "3", "The contract balance is incorrect");
     });
   });
 })
@@ -55,7 +55,7 @@ contract('Splitter', function () {
     const split = await Splitter.deployed();
     const balance = await split.getContractBalance.call(split);
     console.log(balance.toString(10));
-    assert.equal(balance.toString(10), "0", "0 is not the balance of the contract");
+    assert.strictEqual(balance.toString(10), "0", "0 is not the balance of the contract");
   });
 })
 
@@ -68,7 +68,7 @@ contract('Splitter', function (accounts) {
     const split = await Splitter.deployed();
     split.deposit(receiver1, receiver2, { from: owner, value: amount });
     const balance = await split.getContractBalance.call(split);
-    assert.equal(balance.toString(10), "3", "The contract balance is incorrect");
+    assert.strictEqual(balance.toString(10), "3", "The contract balance is incorrect");
   });
 })
 
@@ -91,7 +91,7 @@ contract('Splitter', (accounts) => {
     // Retrieve the splitter contract instance
     //const split = await Splitter.deployed();
     // Should verify the contract balance is Zero
-    assert.equal(0, await split.getContractBalance().valueOf(), "The contract balance needs to be 0");
+    assert.Equal(0, await split.getContractBalance().valueOf(), "The contract balance needs to be 0");
   })
 
   it("owner can deposit to contract - Async", async () => {
