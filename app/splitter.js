@@ -66,7 +66,7 @@ const deposit = function () {
                 console.error(receipt);
                 $("#status").html("There was an error in the tx execution");
             } else {
-                var logDeposit = split.LogDeposit().formatter(receipt.logs[0]);
+                let logDeposit = split.LogDeposit().formatter(receipt.logs[0]);
                 console.log("Sender's address: " + logDeposit.args.sender);
                 console.log("Amount deposited: " + web3.fromWei(logDeposit.args.depositAmount));
                 console.log("Receiver 1: " + logDeposit.args.receiver1);
@@ -115,7 +115,7 @@ const withdrawFunds = function () {
                 console.error(receipt);
                 $("#status").html("There was an error in the tx execution");
             } else {
-                var logWithdraw = split.LogWithdrawFunds().formatter(receipt.logs[0]);
+                let logWithdraw = split.LogWithdrawFunds().formatter(receipt.logs[0]);
                 console.log("Sender's address: " + logWithdraw.args.sender);
                 console.log("Amount withdrawn: " + web3.fromWei(logWithdraw.args.amount));    
                 $("#status").html("Transfer executed");
