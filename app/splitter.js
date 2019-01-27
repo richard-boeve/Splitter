@@ -74,7 +74,7 @@ const deposit = function () {
                 console.log("Receiver 2: " + logDeposit.args.receiver2);
                 $("#status").html("Transfer executed");
             }
-            return split.getContractBalance();
+            return web3.eth.getBalancePromise(split.address);;
         })
         //show the updated balance of the contract
         .then(balance => {
@@ -121,7 +121,7 @@ const withdrawFunds = function () {
                 console.log("Amount withdrawn: " + web3.fromWei(logWithdraw.args.amount));    
                 $("#status").html("Transfer executed");
             }
-            return split.getContractBalance();
+            return web3.eth.getBalancePromise(split.address);
         })
         //show the updated balance of the contract
         .then(balance => {
@@ -131,5 +131,7 @@ const withdrawFunds = function () {
         $("#status").html(e.toString());
         console.error(e);
         });;
+
+        
 };
 
