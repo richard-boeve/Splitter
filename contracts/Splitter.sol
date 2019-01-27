@@ -13,7 +13,7 @@ contract Splitter is Stoppable {
     event LogWithdrawFunds(address indexed sender, uint amount);
 
     //Mapping of address to balance
-    mapping(address => uint256) public balanceReceiver;
+    mapping(address => uint256) public balance;
 
     //Function that allows UI to query the balance of the contract
     function getContractBalance() public view returns (uint256) {
@@ -33,13 +33,13 @@ contract Splitter is Stoppable {
         // If the msg.value is an uneven number
         if (msg.value % 2 != 0) {
             // Credit 1 wei to the address of the sender
-            balanceReceiver[msg.sender] += 1; 
+            balance[msg.sender] += 1; 
         }
         // Remaining msg.value to be split between _receiver1 and _receiver2
         // If the msg.value is an uneven number, msg.value will be divided by two and the remainder will disappear
         half = msg.value / 2;
-        balanceReceiver[_receiver1] += half;
-        balanceReceiver[_receiver2] += half;
+        balance[_receiver1] += half;
+        balance[_receiver2] += half;
         emit LogDeposit(msg.sender, msg.value, _receiver1, _receiver2);
     }
 
@@ -48,8 +48,8 @@ contract Splitter is Stoppable {
         // Verify that the contract isn't paused
         require(state != SplitterState.Paused, "Contract must be operational or deactivated to be able to withdraw");
         // Set the balance of the msg.sender to 0
-        uint256 amountForWithdrawal = balanceReceiver[msg.sender];
-        balanceReceiver[msg.sender] = 0;
+        uint256 amountForWithdrawal = balance[msg.sender];
+        balance[msg.sender] = 0;
         // Transfer the balance to the msg.sender
         address(msg.sender).transfer(amountForWithdrawal);
         // Create logs
