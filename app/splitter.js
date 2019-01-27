@@ -26,8 +26,9 @@ Splitter.setProvider(web3.currentProvider);
 // Upon loading of the site check the balance of the contract and return to populate 
 window.addEventListener('load', function () {
     return Splitter.deployed()
-        .then(function (split) {
-            return split.getContractBalance.call();
+        .then(_split => {
+            split = _split;
+            return web3.eth.getBalancePromise(split.address);
         }).then(balance => $("#balanceContract").html(web3.fromWei(balance.toString(10))
         ))
         .then(() => $("#send").click(deposit))

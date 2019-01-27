@@ -14,11 +14,6 @@ contract Splitter is Stoppable {
 
     //Mapping of address to balance
     mapping(address => uint256) public balance;
-
-    //Function that allows UI to query the balance of the contract
-    function getContractBalance() public view returns (uint256) {
-        return address(this).balance;
-    }   
     
     //Allows the message sender to send Ether to the contract and have it assigned to the balance of two receiver addresses
     function deposit(address _receiver1, address _receiver2) public payable {
