@@ -7,15 +7,15 @@ const splitterJson = require("../build/contracts/Splitter.json");
 require("file-loader?name=./index.html!./index.html");
 
 // Use a web3 browser if availble
-    if (typeof web3 !== 'undefined') {
-        console.log('Web3 browser detected! ' + web3.currentProvider.constructor.name)
-        window.web3 = new Web3(web3.currentProvider);
+if (typeof web3 !== 'undefined') {
+    console.log('Web3 browser detected! ' + web3.currentProvider.constructor.name)
+    window.web3 = new Web3(web3.currentProvider);
     // Otherwise, use a own provider with port 8545  
-    } else {
-        console.log('Web3 browser not detected, setting own provider!')
-        window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-    }
-    
+} else {
+    console.log('Web3 browser not detected, setting own provider!')
+    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+}
+
 
 Promise.promisifyAll(web3.eth, { suffix: "Promise" });
 Promise.promisifyAll(web3.version, { suffix: "Promise" });
@@ -28,6 +28,9 @@ window.addEventListener('load', function () {
     return Splitter.deployed()
         .then(_split => {
             split = _split;
+            depositEvent();
+            withdrawEvents();
+            depositEventConsole();
             return web3.eth.getBalancePromise(split.address);
         }).then(balance => $("#balanceContract").html(web3.fromWei(balance.toString(10))
         ))
@@ -80,18 +83,70 @@ const deposit = function () {
         .then(balance => {
             $("#balanceContract").html(web3.fromWei(balance.valueOf()));
         })
+        //.then(() => depositEvent);
         .catch(e => {
             $("#status").html(e.toString());
             console.error(e);
         });
 }
 
+function depositEvent(){
+    eventVar = split.LogDeposit({},{ fromBlock: 0, toBlock: 'latest' });
+    eventVar.watch(function(error, event){        
+        if(error){
+            console.error(error);
+        } 
+        else{
+            $("#history-deposit").find('tbody').append("<tr>")
+                                           .append("<td>Deposit</td>")
+                                           .append("<td>"+event.args.sender+"</td>")
+                                           .append("<td>"+event.args.receiver1+"</td>")                                           
+                                           .append("<td>"+event.args.receiver2+"</td>") 
+                                           .append("<td>"+event.args.depositAmount.toString(10)+"</td>")      
+                                           .append("</tr>");
+        }        
+    });
+}
+
+function depositEventConsole(){
+    eventVar = split.LogDeposit({},{ fromBlock: 0, toBlock: 'latest' });
+    eventVar.watch(function(error, event){        
+        if(error){
+            console.error(error);
+        } 
+        else{
+            console.log("Deposit Event:");
+            console.log(event.args.sender);
+            console.log(event.args.receiver1);
+            console.log(event.args.receiver2);
+            console.log(event.args.depositAmount.toString(10));
+        }        
+    });
+}
+
+function withdrawEvents(){
+    eventVar = split.LogWithdrawFunds({},{ fromBlock: 0, toBlock: 'latest' });
+    eventVar.watch(function(error, event){        
+        if(error){
+            console.error(error);
+        } 
+        else{
+            $("#history-withdraw").find('tbody').append("<tr>")
+                                           .append("<td>Withdraw</td>")
+                                           .append("<td>"+event.args.sender+"</td>")
+                                           .append("<td>"+event.args.amount.toString(10)+"</td>")
+                                           .append("</tr>");
+        }        
+    });
+}
+
+
 // function that allows the inputted address to withdraw its funds from the contract
 const withdrawFunds = function () {
     let split;
     accountToWithdraw = $("input[name='withdrawalAddress']").val();
     return Splitter.deployed()
-    //Run the withdrawFunds function in the contract for one of the recipients
+        //Run the withdrawFunds function in the contract for one of the recipients
         .then(_split => {
             split = _split;
             return split.withdrawFunds.sendTransaction({ from: accountToWithdraw });
@@ -118,20 +173,20 @@ const withdrawFunds = function () {
             } else {
                 let logWithdraw = split.LogWithdrawFunds().formatter(receipt.logs[0]);
                 console.log("Sender's address: " + logWithdraw.args.sender);
-                console.log("Amount withdrawn: " + web3.fromWei(logWithdraw.args.amount));    
+                console.log("Amount withdrawn: " + web3.fromWei(logWithdraw.args.amount));
                 $("#status").html("Transfer executed");
             }
             return web3.eth.getBalancePromise(split.address);
         })
         //show the updated balance of the contract
         .then(balance => {
-        $("#balanceContract").html(web3.fromWei(balance.valueOf()));
+            $("#balanceContract").html(web3.fromWei(balance.valueOf()));
         })
         .catch(e => {
-        $("#status").html(e.toString());
-        console.error(e);
+            $("#status").html(e.toString());
+            console.error(e);
         });;
 
-        
+
 };
 
