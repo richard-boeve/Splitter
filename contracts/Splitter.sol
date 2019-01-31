@@ -50,9 +50,4 @@ contract Splitter is Stoppable {
         // Create logs
         emit LogWithdrawFunds (msg.sender, amountForWithdrawal);
     }    
-    
-    //Fallback function which rejects funds sent to the contract address if sender is not the owner
-    function() public { 
-        revert("Fallback function triggered"); 
-    }  
 }
