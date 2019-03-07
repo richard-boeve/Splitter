@@ -1,77 +1,5 @@
 const Splitter = artifacts.require("./Splitter.sol");
-
-//TESTS USING PROMISES
-
-contract('Splitter', function () {
-  it("should return address of splitter contract deployed", function () {
-    return Splitter.deployed().then(function (instance) {
-      return instance.address
-    }).then(function (splitterAdr) {
-      console.log(splitterAdr);
-    });
-  });
-})
-
-contract('Splitter', function () {
-  it("should return balance of contract deployed", function () {
-    return Splitter.deployed().then(function (instance) {
-      return instance.getContractBalance.call(instance);
-    }).then(function (balanceC) {
-      console.log(balanceC.toString(10));
-      assert.strictEqual(balanceC.toString(10), "0", "0 is not the balance of the contract");
-    });
-  });
-})
-
-contract('Splitter', function (accounts) {
-  owner = accounts[0];
-  receiver1 = accounts[1];
-  receiver2 = accounts[2];
-  it("owner can deposit to contract", function () {
-    const amount = 3;
-    return Splitter.deployed().then(function (instance) {
-      splitter = instance;
-      return splitter.deposit(receiver1, receiver2, { from: owner, value: amount });
-    }).then(function () {
-      return splitter.getContractBalance.call(splitter);
-    }).then(function (balanceC) {
-      assert.strictEqual(balanceC.toString(10), "3", "The contract balance is incorrect");
-    });
-  });
-})
-
-//TESTS USING ASYNC
-
-contract('Splitter', function () {
-  it("should return address of splitter contract deployed - Async", async function () {
-    const split = await Splitter.deployed();
-    const address = await split.address;
-    console.log(address);
-  })
-})
-
-contract('Splitter', function () {
-  it("should return balance of contract deployed - Async", async function () {
-    const split = await Splitter.deployed();
-    const balance = await split.getContractBalance.call(split);
-    console.log(balance.toString(10));
-    assert.strictEqual(balance.toString(10), "0", "0 is not the balance of the contract");
-  });
-})
-
-contract('Splitter', function (accounts) {
-  owner = accounts[0];
-  receiver1 = accounts[1];
-  receiver2 = accounts[2];
-  it("owner can deposit to contract - Async", async function () {
-    const amount = 3;
-    const split = await Splitter.deployed();
-    split.deposit(receiver1, receiver2, { from: owner, value: amount });
-    const balance = await split.getContractBalance.call(split);
-    assert.strictEqual(balance.toString(10), "3", "The contract balance is incorrect");
-  });
-})
-
+const BigNumber = require('bignumber.js');
 
 contract('Splitter', (accounts) => {
 
@@ -79,64 +7,63 @@ contract('Splitter', (accounts) => {
   const owner = accounts[0];
   const receiver1 = accounts[1];
   const receiver2 = accounts[2];
+  let depositAmount = web3.toWei(0.1);
+  const GAS_PRICE = 1000;
 
-  beforeEach(function () {
-    return Splitter.new()
-      .then(function (instance) {
-        split = instance;
-      });
+  beforeEach("Create a new instance", async () => {
+    split = await Splitter.new({from: owner, gasPrice: GAS_PRICE})
   });
-
-  it("verify everyting is set up correctly and set split - Async", async () => {
-    // Retrieve the splitter contract instance
-    //const split = await Splitter.deployed();
-    // Should verify the contract balance is Zero
-    assert.Equal(0, await split.getContractBalance().valueOf(), "The contract balance needs to be 0");
-  })
 
   it("owner can deposit to contract - Async", async () => {
-    // Amount of ether in wei to deposit
-    const amountToDeposit = 2000000;
-    //const split = await Splitter.deployed();
-    // Retrieve the current balance of the contract
-    const oldBalance = await split.getContractBalance.call();
-    // Execute the deposit and save the transaction receipt
-    const receipt = await split.deposit(receiver1, receiver2, { from: owner, value: amountToDeposit, gas: 210000 });
-    // Test the results returned in the transaction receipt (e.g. Event log files)
-    assert.equal(receipt.logs[0].args.sender, owner, "Owner is incorrect");
-    assert.equal(receipt.logs[0].args.depositAmount.valueOf(), amountToDeposit, "Deposit amount event log file entry is incorrect");
-    assert.equal(receipt.logs[0].args.receiver1, receiver1, "Receiver 1 event log file entry is incorrect");
-    assert.equal(receipt.logs[0].args.receiver2, receiver2, "Receiver 2 event log file entry is incorrect");
-    //Get the new balance of the splitter contract
-    const newBalance = await split.getContractBalance();
-    // Verify the new balance is correct (sum of old balance plus whatever has been added)
-    assert.equal(newBalance.valueOf(), +amountToDeposit + +oldBalance.valueOf(), "The new contract balance is incorrect");
-  });
-
-  it("receiver1 can withdraw from contract - Async", async () => {
-    //amount of ether to withdraw
-    // Execute the deposit and save the transaction receipt
-    const amountToDeposit = 2000000;
-    const receipt = await split.deposit(receiver1, receiver2, { from: owner, value: amountToDeposit });
-    const oldContractBalance = await split.getContractBalance.call();
-    console.log("Old contract balance:", oldContractBalance);
-    const receiver1_starting_balance = await web3.eth.getBalance(receiver1);
-    console.log("Receiver 1 starting balance:", receiver1_starting_balance);
-    const txObjWithdraw = await split.withdrawFunds({ from: receiver1 });
-    const receiver1_end_balance = await web3.eth.getBalance(receiver1);
-    console.log("Receiver 1 end balance:", receiver1_end_balance);
-    const newContractBalance = await split.getContractBalance.call();
-    console.log("New Contract Balance:", newContractBalance);
-    const amountWithdrawn = oldContractBalance - newContractBalance;
-    console.log("Amount withdrawn:", amountWithdrawn);
-    const gasused = txObjWithdraw.receipt.gasUsed;
-    const gasPaid = gasused * 10000000000;
-    console.log("Gas Paid:", gasPaid);
-    const endBalanceExpected = receiver1_starting_balance + amountWithdrawn - gasPaid;
-    console.log ("endBalanceExpect:", endBalanceExpected);
-    // Verify that receiver1 has the correct balance after withdrawing
-    assert.equal(receiver1_end_balance, endBalanceExpected, "The balance of receiver1 after withdrawal is incorrect");
-    // Verify that the contract has the correct balance after withdrawing
-    assert.equal(newContractBalance, oldContractBalance - amountWithdrawn, "New contract balance is incorrect");
+    //Check the current balance of the contract and owner
+    const contractStartingBalance = await web3.eth.getBalance(split.address);
+    const ownerStartingBalance = await web3.eth.getBalance(owner);
+    //Deposit to contract
+    const depositTxReceipt = await split.deposit(receiver1, receiver2, { from: owner, value: depositAmount, gasPrice: GAS_PRICE });
+    //Obtain gas from receipts
+    const gasUsed = depositTxReceipt.receipt.gasUsed;
+    //Calculate transaction cost
+    const transCost = gasUsed * GAS_PRICE;
+    //Checking the transaction event logs
+    assert.equal(depositTxReceipt.logs[0].args.sender, owner, "Owner is incorrect");
+    assert.equal(depositTxReceipt.logs[0].args.depositAmount, depositAmount, "Deposit amount  is incorrect");
+    assert.equal(depositTxReceipt.logs[0].args.receiver1, receiver1, "Receiver 1 is incorrect");
+    assert.equal(depositTxReceipt.logs[0].args.receiver2, receiver2, "Receiver 2 is incorrect");
+    //Checking the balances on the blockchain
+    assert.equal(contractStartingBalance.plus(depositAmount), (await web3.eth.getBalance(split.address)).toString(10), "Contract balance is incorrect");
+    assert.equal(ownerStartingBalance.minus(depositAmount).minus(transCost), (await web3.eth.getBalance(owner)).toString(10), "Owner balance is incorrect");
+    assert.equal(depositAmount / 2, (await split.balance(receiver1)), "Receiver1 balance is incorrect");
+    assert.equal(depositAmount / 2, (await split.balance(receiver1)), "Receiver2 balance is incorrect");
   })
-}) 
+
+  it("receivers can withdraw from contract - Async", async () => {
+    //Submit Deposit transaction
+    const depositTxReceipt = await split.deposit(receiver1, receiver2, { from: owner, value: depositAmount });
+    //Check balances after Deposit
+    const receiver1StartingBalance = await web3.eth.getBalance(receiver1);
+    const receiver2StartingBalance = await web3.eth.getBalance(receiver2);
+    const contractStartingBalance = await web3.eth.getBalance(split.address);
+    //Submit Witdraw transactions
+    const withdrawTxReceiptReceiver1 = await split.withdrawFunds({ from: receiver1, gasPrice: GAS_PRICE });
+    const withdrawTxReceiptReceiver2 = await split.withdrawFunds({ from: receiver2, gasPrice: GAS_PRICE });
+    //Obtain gas from receipts
+    const gasUsedReceiver1 = withdrawTxReceiptReceiver1.receipt.gasUsed;
+    const gasUsedReceiver2 = withdrawTxReceiptReceiver2.receipt.gasUsed;
+    //Calculate transaction cost
+    const transCostReceiver1 = gasUsedReceiver1 * GAS_PRICE;
+    const transCostReceiver2 = gasUsedReceiver2 * GAS_PRICE;
+    //Checking the transaction event logs
+    assert.equal(withdrawTxReceiptReceiver1.logs[0].args.sender, receiver1, "Sender incorrect");
+    assert.equal(withdrawTxReceiptReceiver1.logs[0].args.amount, depositAmount / 2, "Amount incorrect");
+    assert.equal(withdrawTxReceiptReceiver2.logs[0].args.sender, receiver2, "Sender incorrect");
+    assert.equal(withdrawTxReceiptReceiver2.logs[0].args.amount, depositAmount / 2, "Amount incorrect");
+    //Checking the balances on the blockchain
+    assert.equal(receiver1StartingBalance.plus(depositAmount / 2).minus(transCostReceiver1).toString(10), (await web3.eth.getBalance(receiver1)).toString(10), "Balance of receiver1 is incorrect");
+    assert.equal(receiver2StartingBalance.plus(depositAmount / 2).minus(transCostReceiver2).toString(10), (await web3.eth.getBalance(receiver2)).toString(10), "Balance of receiver1 is incorrect");
+    assert.equal(contractStartingBalance.minus(depositAmount), (await web3.eth.getBalance(split.address)).toString(10), "Contract balance is incorrect");
+  })
+})
+
+    
+    
+    
