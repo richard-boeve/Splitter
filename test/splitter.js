@@ -30,8 +30,8 @@ contract('Splitter', (accounts) => {
     assert.equal(depositTxReceipt.logs[0].args.receiver1, receiver1, "Receiver 1 is incorrect");
     assert.equal(depositTxReceipt.logs[0].args.receiver2, receiver2, "Receiver 2 is incorrect");
     //Checking the balances on the blockchain
-    assert.equal(contractStartingBalance.plus(depositAmount), (await web3.eth.getBalance(split.address)).toString(10), "Contract balance is incorrect");
-    assert.equal(ownerStartingBalance.minus(depositAmount).minus(transCost), (await web3.eth.getBalance(owner)).toString(10), "Owner balance is incorrect");
+    assert.strictEqual((contractStartingBalance.plus(depositAmount)).toString(10), (await web3.eth.getBalance(split.address)).toString(10), "Contract balance is incorrect");
+    assert.strictEqual((ownerStartingBalance.minus(depositAmount).minus(transCost)).toString(10), (await web3.eth.getBalance(owner)).toString(10), "Owner balance is incorrect");
     assert.equal(depositAmount / 2, (await split.balance(receiver1)), "Receiver1 balance is incorrect");
     assert.equal(depositAmount / 2, (await split.balance(receiver1)), "Receiver2 balance is incorrect");
   })
@@ -58,9 +58,9 @@ contract('Splitter', (accounts) => {
     assert.equal(withdrawTxReceiptReceiver2.logs[0].args.sender, receiver2, "Sender incorrect");
     assert.equal(withdrawTxReceiptReceiver2.logs[0].args.amount, depositAmount / 2, "Amount incorrect");
     //Checking the balances on the blockchain
-    assert.equal(receiver1StartingBalance.plus(depositAmount / 2).minus(transCostReceiver1).toString(10), (await web3.eth.getBalance(receiver1)).toString(10), "Balance of receiver1 is incorrect");
-    assert.equal(receiver2StartingBalance.plus(depositAmount / 2).minus(transCostReceiver2).toString(10), (await web3.eth.getBalance(receiver2)).toString(10), "Balance of receiver1 is incorrect");
-    assert.equal(contractStartingBalance.minus(depositAmount), (await web3.eth.getBalance(split.address)).toString(10), "Contract balance is incorrect");
+    assert.strictEqual(receiver1StartingBalance.plus(depositAmount / 2).minus(transCostReceiver1).toString(10), (await web3.eth.getBalance(receiver1)).toString(10), "Balance of receiver1 is incorrect");
+    assert.strictEqual(receiver2StartingBalance.plus(depositAmount / 2).minus(transCostReceiver2).toString(10), (await web3.eth.getBalance(receiver2)).toString(10), "Balance of receiver1 is incorrect");
+    assert.strictEqual(contractStartingBalance.minus(depositAmount).toString(10), (await web3.eth.getBalance(split.address)).toString(10), "Contract balance is incorrect");
   })
 })
 
