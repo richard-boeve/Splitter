@@ -6,7 +6,7 @@ import "./SafeMath.sol";
 contract Splitter is Stoppable {
 
     //Using the SafeMath library
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
     //All events that can be logged
     event LogDeposit(address indexed sender, uint256 depositAmount, address indexed receiver1, address indexed receiver2);
@@ -32,7 +32,7 @@ contract Splitter is Stoppable {
         }
         // Remaining msg.value to be split between _receiver1 and _receiver2
         // If the msg.value is an uneven number, msg.value will be divided by two and the remainder will disappear
-        half = msg.value / 2;
+        half = msg.value.div(2);
         balance[_receiver1] += half;
         balance[_receiver2] += half;
         emit LogDeposit(msg.sender, msg.value, _receiver1, _receiver2);
