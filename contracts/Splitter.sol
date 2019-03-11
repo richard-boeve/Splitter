@@ -17,7 +17,6 @@ contract Splitter is Stoppable {
     
     //Allows the message sender to send Ether to the contract and have it assigned to the balance of two receiver addresses
     function deposit(address _receiver1, address _receiver2) public payable {
-        uint256 half;
         // Verify that the contract is operational before continueing
         require(state == SplitterState.Operational, "Contract is not operational");
         // Verify non empty addresses have been provided
@@ -28,13 +27,13 @@ contract Splitter is Stoppable {
         // If the msg.value is an uneven number
         if (msg.value % 2 != 0) {
             // Credit 1 wei to the address of the sender
-            balance[msg.sender] += 1; 
+            balance[msg.sender] = balance[msg.sender].add(1); 
         }
         // Remaining msg.value to be split between _receiver1 and _receiver2
         // If the msg.value is an uneven number, msg.value will be divided by two and the remainder will disappear
-        half = msg.value.div(2);
-        balance[_receiver1] += half;
-        balance[_receiver2] += half;
+        uint256 half = msg.value.div(2);
+        balance[_receiver1] = balance[_receiver1].add(half);
+        balance[_receiver2] = balance[_receiver2].add(half);
         emit LogDeposit(msg.sender, msg.value, _receiver1, _receiver2);
     }
 
