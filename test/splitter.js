@@ -24,9 +24,9 @@ contract('Splitter', (accounts) => {
     const depositTxObject = await split.deposit(receiver1, receiver2, { from: owner, value: depositAmount, gasPrice: GAS_PRICE });
     console.log(depositAmount.toString(10));
     //Obtain gas from receipts
-    const gasUsed = depositTxObject.receipt.gasUsed;
+    const gasUsed = new BN(depositTxObject.receipt.gasUsed);
     //Calculate transaction cost
-    const transCost = new BN(gasUsed * GAS_PRICE);
+    const transCost = new BN(gasUsed.mul(GAS_PRICE));
     //Checking the transaction event logs
     assert.equal(depositTxObject.logs[0].args.sender, owner, "Sender is incorrect");
     assert.equal(depositTxObject.logs[0].args.depositAmount, depositAmount.toString(10), "Deposit amount is incorrect");
