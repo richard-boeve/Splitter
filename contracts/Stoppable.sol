@@ -1,4 +1,4 @@
-pragma solidity 0.4.24;
+pragma solidity 0.5.0;
 
 import  "./Owned.sol";
 
@@ -31,9 +31,4 @@ contract Stoppable is Owned {
         //Create logs
         emit LogSetState(msg.sender, newState);
     }
-    
-    //Fallback function which rejects funds sent to the contract address if sender is not the owner
-    function() public { 
-        revert("Fallback function triggered"); 
-    }  
 }

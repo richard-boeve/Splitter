@@ -1,4 +1,4 @@
-pragma solidity 0.4.24;
+pragma solidity 0.5.0;
 
 import "./Stoppable.sol";
 import "./SafeMath.sol";
@@ -25,9 +25,10 @@ contract Splitter is Stoppable {
         // Verify receiver 1 address is not equal to receiver2 address  
         require(_receiver1 != _receiver2, "Must provide 2 different addresses");
         // If the msg.value is an uneven number
-        if (msg.value % 2 != 0) {
+        uint256 remainder = msg.value % 2;
+        if (remainder != 0) {
             // Credit 1 wei to the address of the sender
-            balance[msg.sender] = balance[msg.sender].add(1); 
+            balance[msg.sender] = balance[msg.sender].add(remainder); 
         }
         // Remaining msg.value to be split between _receiver1 and _receiver2
         // If the msg.value is an uneven number, msg.value will be divided by two and the remainder will disappear
@@ -43,6 +44,9 @@ contract Splitter is Stoppable {
         require(state != SplitterState.Paused, "Contract must be operational or deactivated to be able to withdraw");
         // Set the balance of the msg.sender to 0
         uint256 amountForWithdrawal = balance[msg.sender];
+        //Verify that stored deposit amount is larger than zero
+        require(amountForWithdrawal > 0, "There is no balance to withdraw");
+        //Set amount to zero
         balance[msg.sender] = 0;
         // Transfer the balance to the msg.sender
         address(msg.sender).transfer(amountForWithdrawal);

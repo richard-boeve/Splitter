@@ -22,7 +22,9 @@
   "homepage": "https://github.com/richard-boeve/Splitter#readme",
   "dependencies": {
     "bluebird": "^3.5.3",
+    "bn.js": "^4.11.8",
     "jquery": "^3.3.1",
+    "truffle-assertions": "^0.8.0",
     "truffle-contract": "^3.0.6",
     "web3": "^0.20.7"
   },
