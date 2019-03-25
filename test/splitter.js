@@ -35,10 +35,11 @@ contract('Splitter', (accounts) => {
     //Checking the balances on the blockchain
     assert.strictEqual(contractStartingBalance.add(depositAmount).toString(10), 
     (await web3.eth.getBalance(split.address)).toString(10), "Contract balance is incorrect");
+    assert.strictEqual(depositAmount.div(numberOfReceivers).toString(10), (await split.balance(receiver1)).toString(10), "Receiver1 balance is incorrect");
+    assert.strictEqual(depositAmount.div(numberOfReceivers).toString(10), (await split.balance(receiver1)).toString(10), "Receiver2 balance is incorrect");
+    //the below test is not testing the contract, but rather that Ethereum transactions as a whole work. Keeping this in for educational purposes
     assert.strictEqual(ownerStartingBalance.sub(depositAmount).sub(transCost).toString(10), 
     (await web3.eth.getBalance(owner)).toString(10), "Owner balance is incorrect");
-    assert.strictEqual((depositAmount / 2).toString(10), (await split.balance(receiver1)).toString(10), "Receiver1 balance is incorrect");
-    assert.strictEqual((depositAmount / 2).toString(10), (await split.balance(receiver1)).toString(10), "Receiver2 balance is incorrect");
   })
 
   it("receivers can withdraw from contract", async () => {
@@ -59,9 +60,9 @@ contract('Splitter', (accounts) => {
     const transCostReceiver2 = new BN(gasUsedReceiver2.mul(GAS_PRICE));
     //Checking the transaction event logs
     assert.equal(withdrawTxReceiptReceiver1.logs[0].args.sender, receiver1, "Sender incorrect");
-    assert.equal(withdrawTxReceiptReceiver1.logs[0].args.amount, depositAmount / 2, "Amount incorrect");
+    assert.equal(withdrawTxReceiptReceiver1.logs[0].args.amount.toString(10), depositAmount.div(numberOfReceivers).toString(10), "Amount incorrect");
     assert.equal(withdrawTxReceiptReceiver2.logs[0].args.sender, receiver2, "Sender incorrect");
-    assert.equal(withdrawTxReceiptReceiver2.logs[0].args.amount, depositAmount / 2, "Amount incorrect");
+    assert.equal(withdrawTxReceiptReceiver2.logs[0].args.amount.toString(10), depositAmount.div(numberOfReceivers).toString(10), "Amount incorrect");
     //Checking the balances on the blockchain
     assert.strictEqual(receiver1StartingBalance.add(depositAmount.div(numberOfReceivers)).sub(transCostReceiver1).toString(10), 
     (await web3.eth.getBalance(receiver1)).toString(10), "Balance of receiver1 is incorrect");
